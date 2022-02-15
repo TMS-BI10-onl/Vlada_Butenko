@@ -1,0 +1,72 @@
+2) a) /*Вывести список цен в виде текстового комментария, основанного на диапазоне цен для продукта. Вывести имя продукта и новое поле PriceRange.*/ 
+
+USE [AdventureWorks2017]
+SELECT Name,
+CASE 
+	WHEN StandardCost = 0 OR StandardCost IS NULL THEN 'Not for sale'
+	WHEN StandardCost BETWEEN 0 AND 100 THEN '<$100'
+	WHEN StandardCost >= 100 AND StandardCost < 500 THEN '<$500'
+	ELSE '>= $500'
+END as PriceRange
+FROM Production.Product;
+
+b) /*Найти ProductID, BusinessEntityID и имя поставщика продукции из Purchasing.ProductVendor и Purchasing.Vendor, где StandardPrice больше $10.
+Также в имени вендора должна присутствовать (вне зависимости от положения) буква X или имя должно начинаться на букву N.*/
+
+USE [AdventureWorks2017]
+SELECT P1.ProductID, P1.BusinessEntityID, P2.Name
+FROM Purchasing.ProductVendor as P1 JOIN 
+	Purchasing.Vendor as P2 ON P1.BusinessEntityID = P2.BusinessEntityID
+WHERE StandardPrice > 10 AND
+Name LIKE '%X%' OR Name LIKE 'N%';
+
+C) /*Найти имена всех вендоров, продукция которых не продавалась за всё время. Необходимо использовать следующую схему соединения таблиц Purchasing.ProductVendor и Purchasing.Vendor*/
+
+USE [AdventureWorks2017]
+SELECT P1.Name
+FROM Purchasing.Vendor as P1 LEFT JOIN 
+Purchasing.ProductVendor as P2 ON P1.BusinessEntityID = P2.BusinessEntityIDЖ
+WHERE P2.BusinessEntityID IS NULL;
+
+3. 
+A) /*Найдите производителей, препараты которых не продавались в 2019 году*/
+
+SELECT Firms.Название as Производители, 
+FROM ((Фирмы-производители as Firms 
+INNER JOIN Фармпрепараты as Drugs ON Firms.id = Drugs.id_firms)
+INNER JOIN Продажи as Sales ON Drugs.id = Sales.id_drugs)		
+WHERE Sales.id_check = (SELECT id_check
+			 FROM Кассовые чеки
+			 WHERE YEAR(Date) != '2019'); 
+
+
+B) /*Выведите увеличенную в 2 раза цену препаратов типа А*/
+
+SELECT Drugs.Price*2 as NewPrice
+FROM Drugs
+WHERE Drugs.id_types IN (SELECT id_types
+			 FROM TypesDrugs
+			 WHERE TypesDrugs.Type = 'A');
+
+C) /*Найдите производителей и кол-во фармпрепаратов для кажого из них, где препарат не относится к типу А.*/
+
+SELECT Firms.Name, COUNT(Drugs.id) as count_id
+FROM Firms
+INNER JOIN Drugs ON Firms.id = Drugs.id_firms
+WHERE Drugs.id_types IN (SELECT id_types
+			FROM TypesDrugs
+			WHERE TypesDrugs.Type NOT LIKE '%A%')
+GROUP BY Firms.Name;
+
+D) /*Вывести название аптеки и названия фармпрепаратов, которые в ней продавались по субботам.*/
+			
+SELECT Pharmacy.Name, Drugs.Name
+FROM Pharmacy
+INNER JOIN Sales ON Pharmacy_id = Sales.Pharmacy_id 
+INNER JOIN Drugs ON Sales.id_drugs = Drugs.id
+WHERE Sales.id_check IN ( SELECT id
+			FROM Check
+			WHERE DATEPART(dw,Date) = 'Saturday'); 
+
+			 
+

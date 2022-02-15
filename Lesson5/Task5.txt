@@ -1,0 +1,189 @@
+<<<<<<< HEAD
+6.
+
+/*В базе данных AdventureWorks2017 создать таблицу Patients для ведения наблюдений за температурой пациентов больницы. Таблица должна содержать поля:
+ID – числовое поле. Авто заполняется.
+FirstName – имя пациента.
+LastName – фамилия пациента.
+SSN – уникальный идентификатор пациента.
+Email – электронная почта пациента. Формируется по следующему правилу: первая большая буква FirstName + маленькие 3 буквы LastName + @mail.com
+Temp – температура пациента.
+CreatedDate — дата измерений. 
+*/
+
+CREATE TABLE Patients
+(
+	ID int IDENTITY(1,1) NOT NULL
+	,FirstName nvarchar(30) NOT NULL
+	,LastName nvarchar(50) NOT NULL
+	,SSN UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID()
+	,Email AS CONCAT(UPPER(LEFT(FirstName,1)),LOWER(LEFT(LastName,3)),'@mail.com')
+	,Temp FLOAT(2)
+	,CreatedDate datetime
+	);
+
+7. /*Добавить в таблицу несколько произвольных записей.*/
+
+CREATE NONCLUSTERED INDEX [NonClusteredIndex-XXX] ON Patients
+	(
+ 	CreatedDate ASC
+	);
+
+DECLARE @begin datetime = '2022-01-01T00:00:00', @end datetime = '2022-02-12T23:59:59';
+
+INSERT INTO Patients (FirstName, LastName, SSN, Temp, CreatedDate)
+VALUES
+	(N'Alexey',N'Usov',DEFAULT, 35.5, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Vlada',N'Kuzmina',DEFAULT, 37.4, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Katya',N'Zybina',DEFAULT, 36.8, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Matvey',N'Anosov',DEFAULT, 37.2, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime));
+
+8. /* Добавить поле TempType со следующими значениями ‘< 0°C’,  ‘> 0°C’ на основе значений из поля Temp ( используйте ALTER TABLE ADD column AS ).*/
+
+ALTER TABLE Patients
+ADD TempType AS 
+CASE
+	WHEN Temp > 0 THEN '>0'
+	WHEN Temp < 0 THEN '<0'
+END;
+
+9. /*Создать представление Patients_v, показывающее температуру в градусах Фаренгейта (°F = °Cx9/5 + 32)*/
+
+CREATE VIEW Patients_v
+AS
+SELECT [Temp] AS C
+	,([Temp]*9/5 + 32) AS F
+FROM [dbo].[Patients];
+
+10. /*Создать функцию, которая возвращает температуру в градусах Фаренгейта, при подаче на вход градусы в Цельсиях*/
+
+CREATE FUNCTION temp_dif (
+	@TempC DECIMAL(5,2)
+	)
+RETURNS DECIMAL(5,2)
+	AS
+BEGIN
+	RETURN (@TempC*9/5 + 32)
+END;
+
+SELECT temp_dif(36.9) AS TempF
+--
+
+11. /*Перепишите решение задачи g из прошлого дз с использованием переменной, максимально упрощая select.*/
+
+/* SELECT DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)) AS first_day_of_month,
+    --CONVERT(DATE, DATEADD(DAY, -DATEPART(DAY,GETDATE())+1 ,GETDATE())) AS optional_way,
+    DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))) AS [it's number],
+    CASE WHEN DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)))<=5 
+        THEN DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))
+    ELSE DATEADD(DAY, (7-DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)))+1), DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))) 
+    END AS first_working_day */
+
+
+DECLARE @FIRST_DAY_OF_MONTH DATE
+SET @FIRST_DAY_OF_MONTH = DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))
+
+
+SELECT
+	CASE WHEN DAY(@FIRST_DAY_OF_MONTH) IN (1,2,3,4,5) THEN @FIRST_DAY_OF_MONTH 
+	END AS first_working_day;
+
+
+
+
+
+=======
+6.
+
+/*В базе данных AdventureWorks2017 создать таблицу Patients для ведения наблюдений за температурой пациентов больницы. Таблица должна содержать поля:
+ID – числовое поле. Авто заполняется.
+FirstName – имя пациента.
+LastName – фамилия пациента.
+SSN – уникальный идентификатор пациента.
+Email – электронная почта пациента. Формируется по следующему правилу: первая большая буква FirstName + маленькие 3 буквы LastName + @mail.com
+Temp – температура пациента.
+CreatedDate — дата измерений. 
+*/
+
+CREATE TABLE Patients
+(
+	ID int IDENTITY(1,1) NOT NULL
+	,FirstName nvarchar(30) NOT NULL
+	,LastName nvarchar(50) NOT NULL
+	,SSN UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID()
+	,Email AS CONCAT(UPPER(LEFT(FirstName,1)),LOWER(LEFT(LastName,3)),'@mail.com')
+	,Temp FLOAT(2)
+	,CreatedDate datetime
+	);
+
+7. /*Добавить в таблицу несколько произвольных записей.*/
+
+CREATE NONCLUSTERED INDEX [NonClusteredIndex-XXX] ON Patients
+	(
+ 	CreatedDate ASC
+	);
+
+DECLARE @begin datetime = '2022-01-01T00:00:00', @end datetime = '2022-02-12T23:59:59';
+
+INSERT INTO Patients (FirstName, LastName, SSN, Temp, CreatedDate)
+VALUES
+	(N'Alexey',N'Usov',DEFAULT, 35.5, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Vlada',N'Kuzmina',DEFAULT, 37.4, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Katya',N'Zybina',DEFAULT, 36.8, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime))
+	,(N'Matvey',N'Anosov',DEFAULT, 37.2, CAST(CAST(@Begin AS float) + (CAST(@End AS float) - CAST(@Begin AS float)) * RAND() AS datetime));
+
+8. /* Добавить поле TempType со следующими значениями ‘< 0°C’,  ‘> 0°C’ на основе значений из поля Temp ( используйте ALTER TABLE ADD column AS ).*/
+
+ALTER TABLE Patients
+ADD TempType AS 
+CASE
+	WHEN Temp > 0 THEN '>0'
+	WHEN Temp < 0 THEN '<0'
+END;
+
+9. /*Создать представление Patients_v, показывающее температуру в градусах Фаренгейта (°F = °Cx9/5 + 32)*/
+
+CREATE VIEW Patients_v
+AS
+SELECT [Temp] AS C
+	,([Temp]*9/5 + 32) AS F
+FROM [dbo].[Patients];
+
+10. /*Создать функцию, которая возвращает температуру в градусах Фаренгейта, при подаче на вход градусы в Цельсиях*/
+
+CREATE FUNCTION temp_dif (
+	@TempC DECIMAL(5,2)
+	)
+RETURNS DECIMAL(5,2)
+	AS
+BEGIN
+	RETURN (@TempC*9/5 + 32)
+END;
+
+SELECT temp_dif(36.9) AS TempF
+--
+
+11. /*Перепишите решение задачи g из прошлого дз с использованием переменной, максимально упрощая select.*/
+
+/* SELECT DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)) AS first_day_of_month,
+    --CONVERT(DATE, DATEADD(DAY, -DATEPART(DAY,GETDATE())+1 ,GETDATE())) AS optional_way,
+    DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))) AS [it's number],
+    CASE WHEN DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)))<=5 
+        THEN DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))
+    ELSE DATEADD(DAY, (7-DATEPART(DW, DATEADD(DAY, 1, EOMONTH(GETDATE(), -1)))+1), DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))) 
+    END AS first_working_day */
+
+
+DECLARE @FIRST_DAY_OF_MONTH DATE
+SET @FIRST_DAY_OF_MONTH = DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))
+
+
+SELECT
+	CASE WHEN DAY(@FIRST_DAY_OF_MONTH) IN (1,2,3,4,5) THEN @FIRST_DAY_OF_MONTH 
+	END AS first_working_day;
+
+
+
+
+
+>>>>>>> ea4ad79ad5e7721b36f595882e02e6faf6276148

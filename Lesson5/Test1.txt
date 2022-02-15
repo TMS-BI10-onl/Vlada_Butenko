@@ -1,0 +1,55 @@
+<<<<<<< HEAD
+1) /*Выберите из таблицы Водители записи, где стаж водителя не равен 3, 5, 6, 10 и  место прописки 'eee'.*/
+
+SELECT *
+FROM Drivers
+WHERE (dr_experience NOT IN (3,5,6,10)) OR 
+		(residence = 'eee');
+
+2) /*Найдите № паспортов водителей, которые ни разу не совершали поездки (решите задачу через left join).*/
+
+SELECT d.n_passport
+FROM Drivers d LEFT JOIN dispatch dh 
+	ON d.drivers_code = dh.drivers_code
+WHERE dh.time_serv = 0
+
+3) /*Написать запрос на выборку авто с годом выпуска = 2015 и его маршруты (таблицы Aвто, Диспеческая, Маршрут). Вывести рег номер авто, время прибытия и отбытия, пункт назначения.*/
+
+SELECT c.drivers_numer, 
+	dh.time_serv,
+	dh.time_arrival,
+	r.destination
+FROM cars c JOIN dispatch dh ON c.cars_code = dh.cars_code
+	JOIN
+	route r	ON dh.drivers_code = r.code_route 
+WHERE c.car_year = 2015
+
+		
+=======
+1) /*Выберите из таблицы Водители записи, где стаж водителя не равен 3, 5, 6, 10 и  место прописки 'eee'.*/
+
+SELECT *
+FROM Drivers
+WHERE (dr_experience NOT IN (3,5,6,10)) OR 
+		(residence = 'eee');
+
+2) /*Найдите № паспортов водителей, которые ни разу не совершали поездки (решите задачу через left join).*/
+
+SELECT d.n_passport
+FROM Drivers d LEFT JOIN dispatch dh 
+	ON d.drivers_code = dh.drivers_code
+WHERE dh.time_serv = 0
+
+3) /*Написать запрос на выборку авто с годом выпуска = 2015 и его маршруты (таблицы Aвто, Диспеческая, Маршрут). Вывести рег номер авто, время прибытия и отбытия, пункт назначения.*/
+
+SELECT c.drivers_numer, 
+	dh.time_serv,
+	dh.time_arrival,
+	r.destination
+FROM cars c JOIN dispatch dh ON c.cars_code = dh.cars_code
+	JOIN
+	route r	ON dh.drivers_code = r.code_route 
+WHERE c.car_year = 2015
+
+		
+>>>>>>> ea4ad79ad5e7721b36f595882e02e6faf6276148

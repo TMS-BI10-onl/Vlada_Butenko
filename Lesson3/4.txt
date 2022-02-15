@@ -1,0 +1,93 @@
+/*Функции даты и времени*/
+
+1. /* Найти возраст работника*/
+
+ SELECT *,
+	DATEDIFF(YEAR, BirthDate, SYSUTCDATETIME()) as Age
+ FROM [AdventureWorks2017].[HumanResources].[Employee];
+
+2. /*Количество проработанных месяцев в отделе сотрудником*/
+USE [AdventureWorks2017]
+SELECT [HumanResources].[Employee].BusinessEntityID
+,DATEDIFF(MM,[HumanResources].[EmployeeDepartmentHistory].StartDate,[HumanResources].[EmployeeDepartmentHistory].EndDate) as Длительность
+FROM [HumanResources].[Employee]
+JOIN [HumanResources].[EmployeeDepartmentHistory] ON [HumanResources].[Employee].BusinessEntityID = [HumanResources].[EmployeeDepartmentHistory].BusinessEntityID
+WHERE DATEDIFF(MM,[HumanResources].[EmployeeDepartmentHistory].StartDate,[HumanResources].[EmployeeDepartmentHistory].EndDate) IS NOT NULL
+
+3. /*Найти месяц начала работы*/
+USE [AdventureWorks2017]
+SELECT BusinessEntityID
+,MONTH(StartDate) as StartMonth
+FROM [HumanResources].[EmployeeDepartmentHistory];
+
+/*Математические функции*/
+
+4. 
+ABS
+
+USE [AdventureWorks2017]
+SELECT [HumanResources].[Employee].BusinessEntityID
+,ABS(DATEDIFF(MM,[HumanResources].[EmployeeDepartmentHistory].EndDate,[HumanResources].[EmployeeDepartmentHistory].StartDate)) as Длительность
+FROM [HumanResources].[Employee]
+JOIN [HumanResources].[EmployeeDepartmentHistory] ON [HumanResources].[Employee].BusinessEntityID = [HumanResources].[EmployeeDepartmentHistory].BusinessEntityID
+WHERE ABS(DATEDIFF(MM,[HumanResources].[EmployeeDepartmentHistory].EndDate,[HumanResources].[EmployeeDepartmentHistory].StartDate)) IS NOT NULL
+
+5. ROUND
+
+USE [AdventureWorks2017]
+SELECT ProductID, ROUND(StandardCost,2) as NewStandardCost
+FROM [Production].[ProductCostHistory];
+
+6. /*Найти среднюю стоимость продукта без учета центов*/
+FLOOR
+
+USE [AdventureWorks2017]
+SELECT FLOOR(AVG(StandardCost)) as avg_st_cost
+FROM [Production].[ProductCostHistory];
+
+/*Строковые функции*/
+
+7. CONCAT
+
+USE [AdventureWorks2017]
+SELECT AddressID
+	,City
+	,StateProvinceID
+	,PostalCode
+	,CONCAT(AddressLine1,' ', AddressLine2) as whole_adress 
+FROM [Person].[Address]
+WHERE AddressLine2 IS NOT NULL;
+
+8. LEFT
+
+USE [AdventureWorks2017]
+SELECT ProductID
+	,Name
+	,LEFT(ProductNumber,2) as abbreviation_product
+FROM [Production].[Product];
+
+9. LEN
+
+USE [AdventureWorks2017]
+SELECT BusinessEntityID
+	,EmailAddress
+	,LEFT(EmailAddress,(LEN(EmailAddress)-20)) as unique_name
+FROM [Person].[EmailAddress];
+
+10. REVERSE
+
+USE [AdventureWorks2017]
+SELECT FirstName, REVERSE(FirstName) AS Reverse  
+FROM Person.Person  
+ORDER BY FirstName;
+
+/*Логические функции*/
+
+11. IFF
+
+USE [AdventureWorks2017]
+SELECT ProductID
+	  ,ROUND(ListPrice,2) AS ListPrice
+	  ,ROUND(IIF(ListPrice > 30, ListPrice * 0.15, ListPrice),2) AS Sale
+FROM [Production].[ProductListPriceHistory]
+

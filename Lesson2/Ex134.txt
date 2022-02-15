@@ -1,0 +1,63 @@
+a) SELECT *
+   FROM [AdventureWorks2017].[Sales].[SalesTerritory]
+
+b) SELECT TerritoryID, Name
+   FROM [AdventureWorks2017].[Sales].[SalesTerritory]
+
+c) SELECT *
+   FROM [AdventureWorks2017].[Person].[Person]
+   WHERE LastName = 'Norman'
+
+d) SELECT *
+   FROM [AdventureWorks2017].[Person].[Person]
+   WHERE EmailPromotion != 2
+
+3. STDEV
+
+ SELECT STDEV(CommissionPct) as 'Standart Deviation' 
+ FROM [AdventureWorks2017].[Sales].[SalesPerson]
+
+VAR
+
+ SELECT VAR(Bonus) as VarBonus 
+ FROM [AdventureWorks2017].[Sales].[SalesPerson]
+
+DATEDIFF
+
+ SELECT LoginID,
+	DATEDIFF(YEAR, BirthDate, SYSUTCDATETIME()) as Age
+ FROM [AdventureWorks2017].[HumanResources].[Employee]
+
+4. 
+
+A) USE [AdventureWorks2017]
+   SELECT DISTINCT(PersonType)
+   FROM [Person].[Person]
+   WHERE LastName like 'M%' OR EmailPromotion != 1
+
+B) USE [AdventureWorks2017]
+   SELECT TOP 3 *
+   FROM [Sales].[SpecialOffer]
+   WHERE StartDate BETWEEN '2013-01-01' AND '2014-01-01'
+   ORDER BY DiscountPct DESC;
+
+C) USE [AdventureWorks2017]
+   SELECT MIN(Size) AS 'Min Size of the Product'
+   ,MAX(Weight) AS 'Max weight of the Product'
+   FROM [Production].[Product]
+
+D) USE [AdventureWorks2017]
+   SELECT ProductSubcategoryID
+   ,MIN(Size) AS 'Min Size of the Product'
+   ,MAX(Weight) AS 'Max weight of the Product'
+   FROM [Production].[Product]
+   GROUP BY ProductSubcategoryID
+
+E) USE [AdventureWorks2017]
+   SELECT ProductSubcategoryID
+   ,Color
+   ,MIN(Size) AS 'Min Size of the Product'
+   ,MAX(Weight) AS 'Max weight of the Product'
+   FROM [Production].[Product]
+   WHERE Color IS NOT NULL
+   GROUP BY ProductSubcategoryID, Color

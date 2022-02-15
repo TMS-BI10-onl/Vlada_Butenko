@@ -1,0 +1,82 @@
+3. /*При каких значениях оконные функции Row Number, Rank и Dense Rank вернут одинаковый результат*/
+
+Оконные функции вернут одинаковые значения, если записи поля по которому сортируются данные, будут уникальными.
+
+4. 
+A)
+/*Изучите данные в таблице Production.UnitMeasure. Проверьте, есть ли здесь UnitMeasureCode, начинающиеся на букву ‘Т’.
+ Сколько всего различных кодов здесь есть? */
+
+
+SELECT COUNT (DISTINCT UnitMeasureCode)
+FROM Production.UnitMeasure 
+--38
+
+SELECT UnitMeasureCode
+FROM Production.UnitMeasure
+WHERE UnitMeasureCode like 'T%'
+--0
+
+INSERT INTO Production.UnitMeasure
+VALUES (N'TT1', N'Test 1', '2020-09-09'), (N'TT2', N'Test 2', GETDATE())
+
+--TT1
+  TT2
+
+B)
+/*Загрузите вставленный набор в новую, не существующую таблицу Production.UnitMeasureTest. Догрузите сюда информацию из Production.UnitMeasure по UnitMeasureCode = ‘CAN’.  
+Посмотрите результат в отсортированном виде по коду. */
+
+INSERT INTO Production.UnitMeasureTest (UnitMeasureCode, Name, ModifiedDate)
+SELECT UnitMeasureCode, Name, ModifiedDate FROM Production.UnitMeasure
+WHERE UnitMeasureCode LIKE 'T%' OR UnitMeasureCode = 'CAN'
+ORDER BY UnitMeasureCode;
+
+C) /*Измените UnitMeasureCode для всего набора из Production.UnitMeasureTest на ‘TTT’*/
+
+UPDATE Production.UnitMeasureTest 
+SET UnitMeasureCode = 'TTT'
+
+D)/*Удалите все строки из Production.UnitMeasureTest.*/
+
+DELETE FROM Production.UnitMeasureTest 
+
+E) /*Найдите информацию из Sales.SalesOrderDetail по заказам 43659,43664.  С помощью оконных функций MAX, MIN, AVG найдем агрегаты по LineTotal для каждого SalesOrderID.
+
+SELECT SalesOrderID
+    ,MIN(LineTotal) OVER (PARTITION BY SalesOrderID) AS MinLineTotal
+    ,MAX(LineTotal) OVER (PARTITION BY SalesOrderID) AS MaxLineTotal
+    ,AVG(LineTotal) OVER (PARTITION BY SalesOrderID) AS AvgLineTotal  
+FROM Sales.SalesOrderDetail
+WHERE SalesOrderID IN (43659,43664)
+
+D) /*Создайте рейтинг cреди продавцов на основе годовых продаж SalesYTD, используя ранжирующую оконную функцию. 
+Добавьте поле Login, состоящий из 3 первых букв фамилии в верхнем регистре + ‘login’ + TerritoryGroup (Null заменить на пустое значение)*/
+
+
+SELECT LastName
+	,SalesYTD
+	,RANK() OVER (ORDER BY  SalesYTD DESC) AS "Rank"
+	,CONCAT(UPPER(LEFT(LastName,3)),'login',ISNULL(TerritoryGroup,' ')) AS "Login"
+FROM Sales.vSalesPerson
+
+SELECT LastName
+	,SalesYTD
+	,RANK() OVER (ORDER BY SalesLastYear DESC) AS "Rank"
+	,CONCAT(UPPER(LEFT(LastName,3)),'login',ISNULL(TerritoryGroup,' ')) AS "Login"
+FROM Sales.vSalesPerson
+
+F) /*Найдите первый будний день месяца*/
+
+Ничего в голову не пришло((
+
+DATEADD
+
+5. /*Найдите значения count(1), count(name), count(id), count(*) для следующей таблицы*/
+
+COUNT (1) -> 4
+COUNT (NAME) -> 2
+COUNT (ID) -> 4 
+COUNT (*) -> 4
+
+

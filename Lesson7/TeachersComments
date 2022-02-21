@@ -1,0 +1,20 @@
+Well done!
+
+A -1
+Correct answer: 0nf
+We can't store values like this.
+
+B
+We can leave name undivided.
+
+D -0.5
+There's no difference between 1nf and 2nf. ??
+
+E -0.5
+You need the third table in the 3nf to store relations between two tables.
+
+F -0.25
+We're deleting calculated fields when moving to the 3nf.
+
+
+Mark: 8

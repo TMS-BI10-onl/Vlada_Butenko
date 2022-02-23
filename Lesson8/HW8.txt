@@ -1,0 +1,80 @@
+1. /*Создайте вашу базу данных: таблицы, ограничения, ключи.*/
+
+CREATE DATABASE tblTours
+Drop Table if exists Dim_Clients 
+CREATE TABLE Dim_Clients
+( IDClient INTEGER CONSTRAINT PK_DClient PRIMARY KEY (IDClient) IDENTITY (1,1) 
+  ,IdentificationNumber UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID()
+  ,FirstName nvarchar(30) NOT NULL
+  ,LastName nvarchar(40) NOT NULL
+  ,BirthDate DATE
+  ,Gender nvarchar(10)
+  ,Phone nvarchar(15)
+  ,Email nvarchar(30) NOT NULL
+  );
+  
+CREATE TABLE Dim_Managers
+(IDManager INTEGER CONSTRAINT PK_IDManager PRIMARY KEY (IDManager) IDENTITY (1,1)
+  ,FirstName nvarchar(30) NOT NULL
+  ,LastName nvarchar(40) NOT NULL
+  ,Position nvarchar(20) NOT NULL
+  ,Phone nvarchar(15)
+  ,Email nvarchar(30) NOT NULL
+  );
+  
+ CREATE TABLE Dim_Tours
+ (IDTour INTEGER CONSTRAINT PK_IDTour PRIMARY KEY (IDTour) IDENTITY (1,1)
+  ,TourName nvarchar(50) NOT NULL
+  ,HotelName nvarchar(30) NOT NULL
+  ,HotelRating integer
+  ,Country nvarchar(50) NOT NULL
+  ,City nvarchar(30) NOT NULL
+  ,Address nvarchar(50) 
+  ,CateringType nvarchar(30)
+  ,Transfer nvarchar(30)
+  ,MaxQuantity integer NOT NULL
+  ,TransportType nvarchar(30) NOT NULL
+  ,TransportClass nvarchar(30)
+  );
+
+ CREATE TABLE Dim_Offices
+  (IDOffice INTEGER CONSTRAINT PK_IDOffice PRIMARY KEY (IDOffice) IDENTITY (1,1)
+   ,City nvarchar(30) NOT NULL
+   ,Address nvarchar(90)
+   );
+
+CREATE TABLE Fct_Sales
+(IDSales INTEGER CONSTRAINT PK_IDSales PRIMARY KEY (IDSales) IDENTITY (1,1)
+ ,ContractNumber nvarchar(30) UNIQUE
+ ,DateSales Date
+ ,IDManager INTEGER CONSTRAINT FK_IDManager FOREIGN KEY 
+	REFERENCES Dim_Managers(IDManager)
+ ,IDClient INTEGER CONSTRAINT FK_IDClient FOREIGN KEY
+	REFERENCES Dim_Clients(IDClient)
+ ,IDOffices INTEGER CONSTRAINT FK_IDOffices FOREIGN KEY 
+	REFERENCES Dim_Offices(IDOffice)
+ ,Costs MONEY
+ ,SellingPrice MONEY
+ ,DiscountRate SMALLMONEY
+ ,TourCapacity INTEGER
+ ,TourStartDate Date
+ ,TourFinishDate Date
+ );
+
+2. /*Напишите скрипт для получения 1 млн человек с различными именами и фамилиями.*/
+
+USE People
+SELECT TOP 1000000
+	[dbo].[MOCK_DATA].[first_name]
+	,[dbo].[MOCK_DATA (1)].[last_name]
+FROM [dbo].[MOCK_DATA]  CROSS JOIN [dbo].[MOCK_DATA (1)] 
+
+3. /*Познакомьтесь с обобщенным табличным выражением WITH. Когда можем использовать данную структуру? Чем отличается от подзапроса? */
+
+Когда используем: - для написания рекурсивного запроса (возвращение иерархических данных)
+		  - когда нет необходимости сохранять в базе запрос viewб время ограничено продолжительностью запроса
+		  - для многократных ссылок на результирующий набор из одной и той же SQL инструкции
+После ОТВ испозуются SELECT, INSERT, UPDATE, MERGE или DELETE.
+
+Отличие от подзапроса:
+ОТВ могут ссылаться сами на себя, а на них один и тот же запрос может ссылаться несколько раз.

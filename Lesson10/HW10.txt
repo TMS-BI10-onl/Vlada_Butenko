@@ -1,0 +1,30 @@
+3. /*Напишите скрипт для суммы OrderQty для каждого года и зимних месяцев из Production.WorkOrder в виде транспонированной матрицы*/
+
+USE [AdventureWorks2017]
+GO
+SELECT Year, [1] AS January, [2] AS February, [12] AS December
+FROM
+(
+	SELECT  YEAR(DueDate) as Year, DATEPART(MM,DueDate) as WinterMonth, SUM(OrderQty) AS OrderQty
+	FROM Production.WorkOrder 
+	WHERE DATEPART(MM,DueDate) IN (1,2,12)
+	GROUP BY DueDate
+) AS SourceTable
+PIVOT
+(
+	SUM(OrderQty)
+	FOR WinterMonth IN ([1],[2],[12])
+)AS PivotTable;
+
+4. 
+
+Автор (КодАвтора, ФИО, НомерКниги)
+Книги (НомерКниги (FK), Название, Издательство, Год издания)
+Издательство (Издательство (FK), Город)
+Выдача книг (НомерВыдачи (FK), НомерКниги, НомерКаталога, НомерЧитателя, ДатаВыдачи, ДатаВозврата)
+Каталог (НомерКаталога (FK), НомерКниги, НаличиеКниги)
+Читатели (НомерЧитателя (FK), НомерБилета, ФИО, Адрес, Телефон, Имейл, ДатаРождения)
+
+Выбрать всех читателей, которые брали книги Достоевского
+
+ВЫбрать книги, которые читатели еще не вернули

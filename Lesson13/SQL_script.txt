@@ -1,0 +1,23 @@
+
+USE [tblTours]
+SELECT TOP (10) [IDSale]
+	,[ContractNumber]
+	,[DataSales]
+	,mng.Email as ManagerEmail
+	,CONCAT(UPPER(LEFT(t.Country,3)),' ',t.City) as TourCountryHost
+	,cl.IdentificationNumber as ClientIdentNumber
+	,o.Address as OfficeAddress
+	,[Costs]
+	,[SellingPrice]
+	,[DiscountRate]
+	,[TourCapacity]
+	,[TourStartDate]
+	,[TourFinishDate]
+FROM [dbo].[SalesFct] s
+JOIN [dbo].[ClientsDim] cl ON cl.IDClient = s.IDClient
+JOIN [dbo].[ManagersDim] mng ON mng.IDManager = s.IDManager
+JOIN [dbo].[ToursDim] t ON t.IDTour = s.IDTour
+JOIN [dbo].[OfficesDim] o ON o.IDOffice = s.IDOffice
+
+2. Запуталась с запросами, которые нужно написать для замены альтернативных ключей на первичные((
+Всё, что пробовала написать, выдавало ошибку(

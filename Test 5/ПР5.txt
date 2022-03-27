@@ -1,0 +1,90 @@
+1. Найти ProductSubcategoryID из Production.Product, где мин вес такого ProductSubcategoryID больше 150. 
+
+SELECT TOP (1) WITH TIES ProductSubcategoryID, Weight AS min_weight
+FROM Production.Product
+WHERE Weight > 150
+ORDER BY Weight ASC 
+
+2. Найти самый дорогой продукт (поле StandardCost) из Production.Product. (4 способа)
+
+--1
+SELECT TOP (1) WITH TIES Name, StandardCost
+FROM Production.Product
+ORDER BY StandardCost DESC
+
+--2
+SELECT Name, MAX(StandardCost) as max_st_cost
+FROM Production.Product
+GROUP BY Name
+ORDER BY MAX(StandardCost) DESC
+
+SELECT Name, StandardCost as max_st_cost
+FROM Production.Product
+WHERE StandardCost = (SELECT MAX(StandardCost)
+				FROM Production.Product);
+
+--3
+
+SELECT Name, StandardCost
+FROM
+(
+SELECT Name,
+	StandardCost,
+	MAX(StandardCost) OVER () AS max_st_cost
+FROM Production.Product
+) t
+WHERE StandardCost = max_st_cost
+
+--4
+
+SELECT Name, StandardCost
+FROM
+(
+SELECT Name,
+	StandardCost,
+	RANK() OVER (ORDER BY StandardCost DESC) AS rnk_st_cost
+FROM Production.Product
+) t
+WHERE rnk_st_cost = 1
+
+3. Найти страны, в которые за последний год не было куплено ни одного тура. (схема GROUP2)
+
+USE tblTours
+SELECT Country
+FROM [dbo].[ToursDim]
+WHERE Country NOT IN (
+	SELECT DISTINCT t.Country
+	FROM [dbo].[SalesFct] s LEFT JOIN [dbo].[ToursDim] t ON s.IDTour = t.IDTour
+	WHERE s.DataSales > DATEADD(year,-1,GETDATE())
+	);
+
+4. Найти для каждого менеджера кол-во продаж за последние 15 лет.  (схема GROUP2)
+
+SELECT M.[FirstName]
+		,M.[LastName]
+		,COUNT(IDSale) AS cnt_sale
+FROM [dbo].[SalesFct] S LEFT JOIN [dbo].[ManagersDim] M ON M.[IDManager] = S.[IDManager]
+WHERE S.DataSales > DATEADD(YEAR,-15,GETDATE())
+GROUP BY M.[FirstName], M.[LastName]
+
+5. 
+Users (
+    id bigint NOT NULL,
+    email varchar(255) NOT NULL
+);
+
+Notifications (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    category varchar(100),
+    is_read boolean DEFAULT false
+);
+
+Найти список категорий для пользователя alex@gmail.com, в которых более 50 непрочитанных нотификаций
+
+SELECT N.category
+	,COUNT(ID) AS cnt_notification
+FROM Notifications N LEFT JOIN Users U ON U.id = N.id
+WHERE U.email = 'alex@gmail.com' AND N.is_read IS FALSE
+GROUP BY N.category 
+HAVING COUNT(ID) > 50

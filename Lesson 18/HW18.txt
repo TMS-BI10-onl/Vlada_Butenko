@@ -1,0 +1,79 @@
+/*1.	Покажите всех менеджеров, которые имеют в подчинении больше 6-ти сотрудников.
+*/
+
+SELECT e1.first_name, e1.last_name, count(1)
+FROM employees e1 LEFT JOIN employees e2 
+ON e1.managers_id = e2.employees_id
+GROUP BY e1.first_name, e1.last_name
+HAVING COUNT(1) > 6
+
+2. 
+/*2.	Вывести min и max зарплату с вычетом commission_pct для каждого департамента. 
+(commission_pct на базе указывается в процентах). */
+
+SELECT department_id,
+	MIN(salary*(1-commission_pct/100)) AS min_salary,
+	MAX(salary*(1-commission_pct/100)) AS max_salary
+FROM EMPLOYEES
+GROUB BY department_id
+
+/*3.	Вывести только регион, где работают больше всего людей*/
+
+SELECT TOP 1 WITH TIES Region_name
+FROM
+(
+SELECT r.Region_name, COUNT(e.employees_id) as cnt_employees
+FROM Regions r
+	JOIN Countries c
+		ON r.region_id = c.region_id
+	JOIN Locations l
+		ON c.country_id = l.country_id
+	JOIN Departments d
+		ON l.location_id = d.location_id
+	JOIN Employees e
+		ON d.department_id = e.department_id
+GROUP BY r.Region_name
+) t
+ORDER BY cnt_employees DESC
+
+/*4.	Найдите разницу в процентах между средней зп
+ по каждому департаменту от общей средней (по всем департаментам).*/
+
+SELECT d.department_name,
+	AVG(e.Salary) OVER () as total_avg_salary,
+	AVG(e.Salary) OVER (PARTITION BY d.department_name) as d_avg_salary,
+	AVG(e.Salary) OVER (PARTITION BY d.department_name) / AVG(e.Salary) OVER () * 100 as salary_dif
+FROM Employees e JOIN Departments d
+		ON d.department_id = e.department_id
+GROUP BY d.department_name
+
+5.
+/*5.	Найдите людей, кто проработал больше, 
+чем 10 лет в одном департаменте. */
+
+SELECT First_Name,
+	Last_Name,
+	YEAR(GETDATE() - start_date) as amount_w_years,
+	YEAR(end_date - start_date) as retire_amount
+
+FROM
+(
+SELECT e.First_Name, e.Last_Name, d.department_id, jh.start_date, jh.end_date 
+FROM Employees e JOIN Departments d
+		ON d.department_id = e.department_id
+	JOIN Job_History jh 
+		ON jh.employee_id = e.employee_id
+) t
+GROUP BY First_Name, Last_Name, department_id
+HAVING YEAR(GETDATE() - start_date) > 10 OR
+	YEAR(end_date - start_date) > 10
+
+6. /*	Найдите людей, кто занимает 5-10 место по размеру зарплаты.*/
+
+SELECT First_Name, Last_Name
+FROM
+(
+SELECT First_Name, Last_Name, DENSE_RANK() OVER(ORDER BY Salary) as rnk
+FROM Employees
+) t
+WHERE rnk BETWEEN 5 AND 10

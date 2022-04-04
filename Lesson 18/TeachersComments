@@ -1,0 +1,25 @@
+Well done!
+
+3. -0.5
+No need in the subquery. Count() can be used in the order by.
+
+4. -0.5
+Why do we need group by?
+
+5. -1
+Can be solved in one query.
+Also, HAVING condition should be in the WHERE.
+Table Department is useless.
+
+Mark: 8
+
+You said that HW17 would also be done. I don't see it.
+
+Test notes:
+KPI font is not the same.
+Count of movies - null values is not filtered out.
+What is a better filter for last 25 years: create a filter by release_date (not release date year), select relative date filtering and then type "in the last 25 years".
+Bottom left table - I don't want to see a scroll option. You could make first column smaller.
+Also, it was mentioned that it needed to be one page with 2 views.
+
+Test mark: 8
